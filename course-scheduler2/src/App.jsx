@@ -1,0 +1,40 @@
+import { useState } from 'react'
+import './App.css'
+import {Routes, Route} from "react-router-dom";
+import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
+import NavBar from "./components/NavBar.jsx";
+import ProgressSummary from "./components/ProgressSummary.jsx";
+import CourseCard from "./components/CourseCard.jsx";
+import CourseList from "./components/CourseList.jsx";
+import useFetch from "./hooks/useFetch";
+
+function App() {
+
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL
+
+  const [count, setCount] = useState(0)
+  const { data, isPending, error } = useFetch(`${BASE_URL}/courses`);
+  console.log("Courses:", data);
+
+  return (
+    <>
+      <NavBar />
+        <Routes>
+          <Route path="/" element={
+            <HomePage
+                courses={data}
+                isPending={isPending}
+                error={error}
+            />}
+          />
+          <Route
+              path="/about"
+              element={<AboutPage/>}
+          />
+        </Routes>
+    </>
+  )
+}
+
+export default App
