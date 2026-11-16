@@ -1,4 +1,4 @@
-// routes/books.js
+// routes/courses.js
 // All five CRUD routes plus search -- mysql2 with parameterized queries
 const express = require('express')
 const router = express.Router()
@@ -47,7 +47,7 @@ router.post('/courses', async (req, res) => {
     const error = validateCourse(req.body)
     if (error) return res.status(400).json({ error })
 
-    const { title, pages, author, year, num_sold } = req.body
+    const { number, title, credits, description } = req.body
     try {
         const [result] = await pool.query(
             'INSERT INTO courses ( number, title, credits, description) VALUES (?, ?, ?, ?)',
@@ -71,7 +71,7 @@ router.put('/courses/:id', async (req, res) => {
     const id = parseInt(req.params.id)
     try {
         const [result] = await pool.query(
-            'UPDATE courses SET number=?, title=?, credits=?, description=?, WHERE id=?',
+            'UPDATE courses SET number=?, title=?, credits=?, description=? WHERE id=?',
             [number ,title, parseInt(credits), description, id]
         )
         if (result.affectedRows === 0) return res.status(404).json({ error: 'Course not found' })
