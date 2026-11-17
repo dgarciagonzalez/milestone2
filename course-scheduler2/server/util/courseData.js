@@ -1,9 +1,3 @@
-// server/util/courseData.js
-// GIVEN CODE -- use as written
-
-// Returns courses in the Section 5 shape: each course has a prerequisites array.
-// Call with no id to get all courses (an array).
-// Call with an id to get one course (an object), or null if it does not exist.
 async function getCoursesWithPrereqs(pool, id) {
     let courses
     if (id === undefined) {
@@ -27,7 +21,6 @@ async function getCoursesWithPrereqs(pool, id) {
     return result.length > 0 ? result[0] : null
 }
 
-// Replaces this user's completions with the course ids in courseIds.
 async function replaceCompletions(pool, userId, courseIds) {
     await pool.query('DELETE FROM completions WHERE user_id = ?', [userId])
 

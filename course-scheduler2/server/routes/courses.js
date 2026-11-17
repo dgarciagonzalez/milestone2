@@ -1,4 +1,3 @@
-// routes/courses.js
 // All five CRUD routes plus search -- mysql2 with parameterized queries
 const express = require('express')
 const router = express.Router()
