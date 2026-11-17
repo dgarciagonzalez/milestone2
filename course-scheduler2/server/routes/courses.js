@@ -5,42 +5,17 @@ const pool = require('../util/database')
 const validateCourse = require("../util/validateCourse");
 
 // GET all courses, including prerequisites
+const { getCoursesWithPrereqs } = require('../util/courseData')
+
 router.get('/courses', async (req, res) => {
     try {
-        const [courses] = await pool.query(
-            'SELECT * FROM courses'
-        );
-
-        const [prerequisites] = await pool.query(
-            'SELECT * FROM prerequisites'
-        );
-
-        const result = courses.map((course) => ({
-            ...course,
-            prerequisites: prerequisites
-                .filter((p) => String(p.course_id) === String(course.id))
-                .map((p) => p.prereq_id)
-        }));
-
-        res.json(result);
-
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// GET search by title -- must come BEFORE /courses/:id
-router.get('/courses/search/:term', async (req, res) => {
-    try {
-        const [rows] = await pool.query(
-            'SELECT * FROM courses WHERE title LIKE ?',
-            [`%${req.params.term}%`]
-        )
-        res.json(rows)
+        const courses = await getCoursesWithPrereqs(pool)
+        res.json(courses)
     } catch (err) {
         res.status(500).json({ error: err.message })
     }
 })
+
 
 // GET single courses by id
 router.get('/courses/:id', async (req, res) => {
