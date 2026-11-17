@@ -1,16 +1,54 @@
-# React + Vite
+# Project Setup and Installation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Prerequisites
+- Node.js and npm installed
+- MySQL
 
-Currently, two official plugins are available:
+## 1. Set Up the Server (Backend)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Open a terminal and navigate to the server directory:
 
-## React Compiler
+- cd server
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+Install the server dependencies:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- npm install
+
+Create your .env file using the example:
+
+- cp .env.example .env
+
+Open .env and enter your actual database credentials.
+
+## 2. Set Up the Database
+
+Open MySQL and execute the SQL files in this order:
+
+1. schema.sql – Creates the database tables.
+2. seed.sql – Inserts the initial sample data.
+
+### Start the Server
+
+From inside the server directory, run:
+
+- npm run dev
+
+
+## 3. Set Up the Client (Frontend)
+
+Open a second terminal and navigate to the project's root directory.
+
+Install the client dependencies:
+
+
+- npm install
+
+
+Start the client:
+
+- npm run dev
+
+
+Open the local URL displayed in the terminal (usually `http://localhost:5173`).
+
