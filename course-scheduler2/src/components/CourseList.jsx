@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react";
 import CourseCard from "./CourseCard";
 import ProgressSummary from "./ProgressSummary";
+import useFetch from "../hooks/useFetch.js";
 
 function CourseList(props) {
     const btnGroupStyle = {
@@ -9,21 +10,48 @@ function CourseList(props) {
 
     const [selected, setSelected] = useState("All Courses");
     const options = ["All Courses", "Completed Only", "Remaining"];
-    const [completedIds, setCompletedIds] = useState(() => {
-        const saved = localStorage.getItem("completedIds");
-        return saved ? JSON.parse(saved) : [];
-    });
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    const { data: savedCompletions } = useFetch(`${BASE_URL}/completions`)
+    const [completed, setCompleted] = useState([])
 
+// NOTE: when the fetch finishes, copy the server's list into editable state
+    useEffect(() => {
+        if (Array.isArray(savedCompletions)) setCompleted(savedCompletions)
+    }, [savedCompletions])
+
+    const [isSaving, setIsSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState("");
 
-    const handleSave = () => {
-        localStorage.setItem("completedIds", JSON.stringify(completedIds));
-        setSaveMessage("Progress saved.");
-    };
+    const handleSave = async () => {
+        setIsSaving(true);
+        setSaveMessage("");
 
+        try {
+            const response = await fetch(`${BASE_URL}/completions`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify( completed)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Unable to save progress.");
+            }
+
+            setSaveMessage("Progress saved successfully!");
+
+        } catch (error) {
+            setSaveMessage(error.message);
+        } finally {
+            setIsSaving(false);
+        }
+    };
     const handleToggleCourse = (courseId, isChecked) => {
         setSaveMessage("");
-        setCompletedIds((prevIds) => {
+        setCompleted((prevIds) => {
             if (isChecked) {
                 return [...prevIds, courseId];
             }
@@ -64,35 +92,35 @@ function CourseList(props) {
     };
 
     const filteredCourses = props.courses?.filter((course) => {
-        const isCompleted = completedIds.includes(course.id);
+        const isCompleted = completed.includes(course.id);
         if (selected === "Completed Only") return isCompleted;
         if (selected === "Remaining") return !isCompleted;
         return true;
     });
 
     const courses = props.courses ?? []
-    const completedIdSet = new Set(completedIds.map((id) => String(id)));
+    const savedCompletionsSet = new Set(completed.map((id) => String(id)));
 
 
     const totalCourses = courses.length;
 
     const completedCourses = courses.filter((course) =>
-        completedIdSet.has(String(course.id))
+        savedCompletionsSet.has(String(course.id))
     ).length;
 
     const remainingCourses = totalCourses - completedCourses;
 
     const availableCourses = courses.filter((course) =>
-        !completedIdSet.has(String(course.id)) &&
+        !savedCompletionsSet.has(String(course.id)) &&
         (course.prerequisites ?? []).every((prereqID) =>
-            completedIdSet.has(String(prereqID))
+            savedCompletionsSet.has(String(prereqID))
         )
     );
 
     const lockedCourses = courses.filter((course) =>
-        !completedIdSet.has(String(course.id)) &&
+        !savedCompletionsSet.has(String(course.id)) &&
         !(course.prerequisites ?? []).every((prereqID) =>
-            completedIdSet.has(String(prereqID))
+            savedCompletionsSet.has(String(prereqID))
         )
     );
 
@@ -126,16 +154,14 @@ function CourseList(props) {
                 <div className="d-flex align-items-center gap-2">
 
                     {saveMessage && (
-                        <span className="text-success">
-            {saveMessage}
-        </span>
+                        <span className={`alert ${saveMessage.includes("successfully") ? "text-success" : "text-danger"} `}>
+        {saveMessage}
+    </span>
                     )}
 
-                    <button
-                        className="btn btn-success"
-                        onClick={handleSave}
-                    >
-                        Save
+
+                    <button className="btn btn-success" onClick={handleSave} disabled={isSaving}>
+                        {isSaving ? "Saving..." : "Save"}
                     </button>
 
                 </div>
@@ -143,17 +169,17 @@ function CourseList(props) {
 
             <div className="row g-3 mt-3">
                 {filteredCourses?.map((course)=>{
-                    const isCompleted = completedIds.some((id) => String(id) === String(course.id));
+                    const isCompleted = completed.some((id) => String(id) === String(course.id));
 
                     const isAvailable = (course.prerequisites ?? [])
-                        .every((prereqID) => completedIds.some((id) => String(id) === String(prereqID)));
+                        .every((prereqID) => completed.some((id) => String(id) === String(prereqID)));
 
                     return(
                         <div className="col-12 col-md-6 col-lg-4" key={course.id}>
                             <CourseCard
                                 course={course}
                                 courses={props.courses}
-                                checked={completedIds.includes(course.id)}
+                                checked={completed.includes(course.id)}
                                 locked={!isCompleted && !isAvailable}
                                 onChange={(isChecked) => handleToggleCourse(course.id, isChecked)}
                             />
