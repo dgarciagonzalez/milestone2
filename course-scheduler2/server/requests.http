@@ -1,5 +1,43 @@
-@host = http://localhost:3001
+@baseUrl = http://localhost:3000/api
 
-### GET request to example server
-GET {{host}}/
-###
+
+### GET all courses
+GET {{baseUrl}}/courses
+
+### GET one course
+GET {{baseUrl}}/courses/4
+
+### GET a course that does not exist --> 404
+GET {{baseUrl}}/courses/100
+
+### POST new course
+POST {{baseUrl}}/courses
+Content-Type: application/json
+
+{
+  "number": "CSC4600",
+  "title": "Cloud Computing",
+  "description": "Test course",
+  "credits": 3,
+  "prerequisites": [5, 9]
+}
+
+### DELETE course 13
+DELETE {{baseUrl}}/courses/13
+### DELETE course that doesn't exist --> 404
+DELETE {{baseUrl}}/courses/200
+
+### GET completions
+GET {{baseUrl}}/completions
+
+### PUT valid completions
+PUT {{baseUrl}}/completions
+Content-Type: application/json
+
+[1, 3, 2]
+
+### PUT invalid completions (CSC4990 without its prereqs) -> 400
+PUT {{baseUrl}}/completions
+Content-Type: application/json
+
+[1, 10]
