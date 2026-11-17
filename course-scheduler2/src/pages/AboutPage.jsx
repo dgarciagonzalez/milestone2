@@ -20,7 +20,7 @@ function AboutPage() {
                     <span>Sunday, October 11, 2026</span>
 
                     <strong>Version </strong>
-                    <span>1.0.0 </span>
+                    <span>2.0.0 </span>
                 </div>
 
             </div>
