@@ -4,15 +4,30 @@ const router = express.Router()
 const pool = require('../util/database')
 const validateCourse = require("../util/validateCourse");
 
-// GET all courses
+// GET all courses, including prerequisites
 router.get('/courses', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT * FROM courses')
-        res.json(rows)
+        const [courses] = await pool.query(
+            'SELECT * FROM courses'
+        );
+
+        const [prerequisites] = await pool.query(
+            'SELECT * FROM prerequisites'
+        );
+
+        const result = courses.map((course) => ({
+            ...course,
+            prerequisites: prerequisites
+                .filter((p) => String(p.course_id) === String(course.id))
+                .map((p) => p.prereq_id)
+        }));
+
+        res.json(result);
+
     } catch (err) {
-        res.status(500).json({ error: err.message })
+        res.status(500).json({ error: err.message });
     }
-})
+});
 
 // GET search by title -- must come BEFORE /courses/:id
 router.get('/courses/search/:term', async (req, res) => {
