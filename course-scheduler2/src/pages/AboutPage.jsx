@@ -17,7 +17,7 @@ function AboutPage() {
                     <span>Denisse Garcia & Alondra Mendoza</span>
 
                     <strong>Date </strong>
-                    <span>Sunday, November 16, 2026</span>
+                    <span>Monday, November 16, 2026</span>
 
                     <strong>Version </strong>
                     <span>2.0.0 </span>
