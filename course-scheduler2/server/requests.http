@@ -25,7 +25,7 @@ Content-Type: application/json
 ### DELETE course 13
 DELETE {{baseUrl}}/courses/13
 ### DELETE course that doesn't exist --> 404
-DELETE {{baseUrl}}/courses/200
+DELETE {{baseUrl}}/courses/14
 
 ### GET completions
 GET {{baseUrl}}/completions
