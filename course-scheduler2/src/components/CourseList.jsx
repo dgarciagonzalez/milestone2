@@ -43,7 +43,7 @@ function CourseList(props) {
                     );
 
                     const hasMissingPrerequisite =
-                        !course.prerequisites.every((prereqID) =>
+                        !(course.prerequisites ?? []).every((prereqID) =>
                             updatedIds.some(
                                 (id) => String(id) === String(prereqID)
                             )
